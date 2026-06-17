@@ -4,9 +4,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import logging
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
 
+load_dotenv()  # Load environment variables from .env file
+
+url: str = os.getenv("SUPABASE_URL")
+key: str = os.getenv("SUPABASE_KEY")
+
+supabase: Client = create_client(url, key)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
 
 # Not safe! Add your own allowed domains
 origins = [
@@ -27,15 +38,5 @@ class TypePayload(BaseModel):
 
 # Example GET route for app
 @app.get("/")
-def read_root():
-    return {"Message": "Hello World! FastAPI is working."}
-
-# Example POST route for app
-@app.post("/getdata")
-async def create_secret(payload: TypePayload):
-    with open('output_file.txt', 'a') as f:
-        now = datetime.now()
-        formatted_date = now.strftime("%B %d, %Y at %I:%M %p")
-        f.write(formatted_date + ": " + payload.content)
-        f.write('\n')
-    return payload.content
+async def read_root():
+    return {"Hello": "World"}
